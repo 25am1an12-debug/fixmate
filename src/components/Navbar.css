@@ -24,6 +24,8 @@
 
 .nav-actions { display: flex; align-items: center; gap: 12px; }
 .nav-actions .btn { padding: 10px 20px; font-size: 14px; }
+.btn-outline { background: #fff; color: var(--teal-dark); border: 1.5px solid var(--teal); }
+.btn-outline:hover { background: var(--teal-soft); }
 
 .user-chip { display: flex; align-items: center; gap: 10px; }
 .user-avatar {
@@ -37,5 +39,7 @@
 
 @media (max-width: 860px) {
   .nav-links { display: none; }
-  .nav-actions .btn-ghost { display: none; }
+  .navbar-inner { flex-wrap: wrap; height: auto; padding: 10px 0; }
+  .nav-actions { width: 100%; gap: 8px; }
+  .nav-actions .btn { flex: 1; padding: 10px 8px; font-size: 13px; text-align: center; white-space: nowrap; }
 }

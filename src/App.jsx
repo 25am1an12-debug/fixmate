@@ -17,6 +17,7 @@ export default function App() {
   const [booking, setBooking] = useState({ open: false, service: null });
 
   const openLogin = () => setAuth({ open: true, mode: 'login', role: 'customer' });
+  const openLoginPro = () => setAuth({ open: true, mode: 'login', role: 'professional' });
   const openRegisterPro = () => setAuth({ open: true, mode: 'register', role: 'professional' });
   const closeAuth = () => setAuth((a) => ({ ...a, open: false }));
 
@@ -36,13 +37,13 @@ export default function App() {
 
   return (
     <div className="app">
-      <Navbar onLogin={openLogin} onBookNow={handleBookNow} />
+      <Navbar onLogin={openLogin} onProLogin={openLoginPro} onBookNow={handleBookNow} />
 
       <main>
         <Hero onSelectService={startBooking} />
         <Services onSelectService={startBooking} />
         <HowItWorks />
-        <ProCta onJoinAsPro={openRegisterPro} />
+        <ProCta onJoinAsPro={openRegisterPro} onProLogin={openLoginPro} />
         <Testimonials />
       </main>
 

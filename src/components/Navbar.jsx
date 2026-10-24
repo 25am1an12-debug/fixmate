@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import './Navbar.css';
 
-export default function Navbar({ onLogin, onBookNow }) {
+export default function Navbar({ onLogin, onProLogin, onBookNow }) {
   const { user, logout } = useAuth();
 
   return (
@@ -28,7 +28,10 @@ export default function Navbar({ onLogin, onBookNow }) {
               <button className="link-btn" onClick={logout}>Logout</button>
             </div>
           ) : (
-            <button className="btn btn-ghost" onClick={onLogin}>Login</button>
+            <>
+              <button className="btn btn-outline" onClick={onLogin}>Customer Login</button>
+              <button className="btn btn-outline" onClick={onProLogin}>Professional Login</button>
+            </>
           )}
           <button className="btn btn-primary" onClick={onBookNow}>Book Now</button>
         </div>

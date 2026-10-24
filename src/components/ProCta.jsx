@@ -1,7 +1,7 @@
 import React from 'react';
 import './ProCta.css';
 
-export default function ProCta({ onJoinAsPro }) {
+export default function ProCta({ onJoinAsPro, onProLogin }) {
   return (
     <section className="section pro" id="pro">
       <div className="container pro-inner">
@@ -16,7 +16,10 @@ export default function ProCta({ onJoinAsPro }) {
             <li>Choose your own working hours</li>
             <li>Insurance cover on every job</li>
           </ul>
-          <button className="btn btn-primary" onClick={onJoinAsPro}>Register as Professional</button>
+          <div className="pro-actions">
+            <button className="btn btn-primary" onClick={onJoinAsPro}>Register as Professional</button>
+            <button className="btn btn-light" onClick={onProLogin}>Professional Login</button>
+          </div>
         </div>
         <div className="pro-card">
           <div className="pro-stat"><strong>₹42k</strong><span>avg. monthly earnings</span></div>
