@@ -1,0 +1,41 @@
+.navbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.navbar-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px; gap: 16px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  color: #fff; font-weight: 800; font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 14px rgba(0, 195, 137, 0.35);
+}
+.brand-name { font-size: 22px; font-weight: 800; color: var(--navy); letter-spacing: -0.5px; }
+
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { font-size: 15px; font-weight: 600; color: var(--muted); transition: color 0.15s; }
+.nav-links a:hover { color: var(--teal-dark); }
+
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+.nav-actions .btn { padding: 10px 20px; font-size: 14px; }
+
+.user-chip { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--teal-soft); color: var(--teal-dark);
+  font-weight: 800; display: flex; align-items: center; justify-content: center;
+}
+.user-name { font-weight: 700; font-size: 14px; color: var(--navy); }
+.link-btn { background: none; border: none; color: var(--muted); font-size: 13px; font-weight: 600; }
+.link-btn:hover { color: var(--danger); }
+
+@media (max-width: 860px) {
+  .nav-links { display: none; }
+  .nav-actions .btn-ghost { display: none; }
+}

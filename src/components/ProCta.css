@@ -1,0 +1,17 @@
+.pro { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%); }
+.pro-inner { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; }
+.section-title.light { color: #fff; }
+.pro-sub { color: #aebdd2; margin: 14px 0 20px; font-size: 16px; max-width: 520px; }
+.pro-points { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; }
+.pro-points li { color: #dbe5f1; font-size: 15px; padding-left: 28px; position: relative; }
+.pro-points li::before { content: "✓"; position: absolute; left: 0; color: var(--teal); font-weight: 800; }
+.pro-card {
+  background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px; padding: 30px; display: flex; flex-direction: column; gap: 20px;
+  backdrop-filter: blur(6px);
+}
+.pro-stat { display: flex; flex-direction: column; }
+.pro-stat strong { font-size: 30px; color: var(--teal); }
+.pro-stat span { color: #aebdd2; font-size: 13.5px; }
+
+@media (max-width: 860px) { .pro-inner { grid-template-columns: 1fr; } }

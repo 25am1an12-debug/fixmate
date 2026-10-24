@@ -1,0 +1,72 @@
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(11, 31, 58, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  animation: fadeIn 0.18s ease;
+}
+.modal {
+  background: #fff; border-radius: 18px; width: min(430px, 100%);
+  padding: 34px 30px 28px; position: relative;
+  box-shadow: var(--shadow-lg);
+  animation: popIn 0.22s ease;
+  max-height: 92vh; overflow-y: auto;
+}
+@keyframes fadeIn { from { opacity: 0; } }
+@keyframes popIn { from { opacity: 0; transform: translateY(14px) scale(0.98); } }
+
+.modal-x {
+  position: absolute; top: 14px; right: 14px;
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: var(--bg); color: var(--muted); font-size: 14px;
+}
+.modal-x:hover { background: var(--line); }
+.modal h2 { font-size: 22px; color: var(--navy); letter-spacing: -0.3px; }
+.modal-sub { color: var(--muted); font-size: 14px; margin: 6px 0 20px; }
+
+.field { display: block; margin-bottom: 16px; }
+.field span { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
+.field input {
+  width: 100%; padding: 13px 14px; font-size: 15px;
+  border: 1.5px solid var(--line); border-radius: 10px; outline: none; transition: border 0.15s;
+}
+.field input:focus { border-color: var(--teal); }
+.phone-row { display: flex; align-items: stretch; }
+.cc {
+  display: flex; align-items: center; padding: 0 14px;
+  background: var(--bg); border: 1.5px solid var(--line); border-right: none;
+  border-radius: 10px 0 0 10px; font-weight: 700; color: var(--muted); font-size: 15px;
+}
+.phone-row input { border-radius: 0 10px 10px 0; }
+.otp-input { text-align: center; letter-spacing: 8px; font-size: 20px !important; font-weight: 700; }
+
+.role-toggle {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;
+  background: var(--bg); padding: 6px; border-radius: 12px;
+}
+.role-toggle button {
+  border: none; background: transparent; padding: 11px; border-radius: 9px;
+  font-weight: 700; font-size: 14px; color: var(--muted);
+}
+.role-toggle button.active { background: #fff; color: var(--navy); box-shadow: var(--shadow); }
+
+.demo-hint {
+  background: #fff8e6; border: 1px dashed #d9a913; color: #8a6d00;
+  font-size: 13px; border-radius: 8px; padding: 9px 12px; margin: -6px 0 14px;
+}
+.form-error {
+  background: #fdecec; color: var(--danger); font-size: 13.5px;
+  border-radius: 8px; padding: 10px 12px; margin-bottom: 14px;
+}
+.swap { text-align: center; margin-top: 16px; font-size: 14px; color: var(--muted); }
+.swap .link-btn { color: var(--teal-dark); font-weight: 700; font-size: 14px; }
+.center-btn { display: block; margin: 12px auto 0; }
+
+.auth-done { text-align: center; padding: 10px 0; }
+.done-tick {
+  width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 16px;
+  background: var(--teal-soft); color: var(--teal-dark); font-size: 30px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.auth-done h2 { margin-bottom: 6px; }
+.auth-done p { color: var(--muted); margin-bottom: 20px; font-size: 14.5px; }

@@ -1,0 +1,20 @@
+# Render deployment — FixMate backend (free tier)
+# Render dashboard -> New -> Blueprint -> select this repo, or create a
+# Web Service manually with Root Directory = backend.
+services:
+  - type: web
+    name: fixmate-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: MONGODB_URI
+        sync: false # paste your Atlas connection string in the Render dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DEMO_OTP
+        value: "true"
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false # paste the full serviceAccountKey.json content in the Render dashboard
