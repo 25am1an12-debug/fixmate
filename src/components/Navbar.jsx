@@ -2,13 +2,13 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import './Navbar.css';
 
-export default function Navbar({ onLogin, onProLogin, onBookNow }) {
+export default function Navbar({ onLogin, onProLogin, onBookNow, onMyBookings, onHome }) {
   const { user, logout } = useAuth();
 
   return (
     <header className="navbar">
       <div className="container navbar-inner">
-        <a href="#top" className="brand">
+        <a href="#top" className="brand" onClick={(e) => { e.preventDefault(); onHome(); }}>
           <span className="brand-mark">F</span>
           <span className="brand-name">FixMate</span>
         </a>
@@ -18,6 +18,7 @@ export default function Navbar({ onLogin, onProLogin, onBookNow }) {
           <a href="#how">How it works</a>
           <a href="#pro">Become a Pro</a>
           <a href="#reviews">Reviews</a>
+          <button className="nav-link-btn" onClick={onMyBookings}>My Bookings</button>
         </nav>
 
         <div className="nav-actions">
@@ -25,6 +26,7 @@ export default function Navbar({ onLogin, onProLogin, onBookNow }) {
             <div className="user-chip">
               <span className="user-avatar">{user.name?.[0]?.toUpperCase() || 'U'}</span>
               <span className="user-name">{user.name}</span>
+              <button className="link-btn" onClick={onMyBookings}>My Bookings</button>
               <button className="link-btn" onClick={logout}>Logout</button>
             </div>
           ) : (

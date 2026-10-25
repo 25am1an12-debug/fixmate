@@ -8,6 +8,7 @@ import Testimonials from './components/Testimonials.jsx';
 import Footer from './components/Footer.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import BookingModal from './components/BookingModal.jsx';
+import TrackBooking from './components/TrackBooking.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 import './App.css';
 
@@ -15,6 +16,10 @@ export default function App() {
   const { user } = useAuth();
   const [auth, setAuth] = useState({ open: false, mode: 'login', role: 'customer' });
   const [booking, setBooking] = useState({ open: false, service: null });
+  const [view, setView] = useState('home'); // home | track
+
+  const goTrack = () => { setView('track'); window.scrollTo({ top: 0 }); };
+  const goHome = () => { setView('home'); window.scrollTo({ top: 0 }); };
 
   const openLogin = () => setAuth({ open: true, mode: 'login', role: 'customer' });
   const openLoginPro = () => setAuth({ open: true, mode: 'login', role: 'professional' });
@@ -26,6 +31,11 @@ export default function App() {
 
   // Navbar "Book Now" with no service chosen -> scroll to services
   const handleBookNow = () => {
+    if (view !== 'home') {
+      setView('home');
+      setTimeout(() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' }), 80);
+      return;
+    }
     document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -37,14 +47,20 @@ export default function App() {
 
   return (
     <div className="app">
-      <Navbar onLogin={openLogin} onProLogin={openLoginPro} onBookNow={handleBookNow} />
+      <Navbar onLogin={openLogin} onProLogin={openLoginPro} onBookNow={handleBookNow} onMyBookings={goTrack} onHome={goHome} />
 
       <main>
-        <Hero onSelectService={startBooking} />
-        <Services onSelectService={startBooking} />
-        <HowItWorks />
-        <ProCta onJoinAsPro={openRegisterPro} onProLogin={openLoginPro} />
-        <Testimonials />
+        {view === 'track' ? (
+          <TrackBooking onBack={goHome} onLogin={openLogin} onBookNow={handleBookNow} />
+        ) : (
+          <>
+            <Hero onSelectService={startBooking} />
+            <Services onSelectService={startBooking} />
+            <HowItWorks onTrack={goTrack} />
+            <ProCta onJoinAsPro={openRegisterPro} onProLogin={openLoginPro} />
+            <Testimonials />
+          </>
+        )}
       </main>
 
       <Footer />

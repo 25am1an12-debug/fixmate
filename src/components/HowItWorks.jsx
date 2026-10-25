@@ -8,7 +8,7 @@ const steps = [
   { n: '4', title: 'Pay & rate', text: 'Pay securely after the job and rate your experience.' },
 ];
 
-export default function HowItWorks() {
+export default function HowItWorks({ onTrack }) {
   return (
     <section className="section how" id="how">
       <div className="container">
@@ -36,6 +36,7 @@ export default function HowItWorks() {
             <span className="track-step">Payment</span>
           </div>
           <p className="track-note">Your Booking ID (BK_...) shows live status at every step. Fixed visit fee, no hidden charges — pay only after the job is done.</p>
+          {onTrack && <button className="btn btn-primary track-strip-btn" onClick={onTrack}>Track my booking →</button>}
         </div>
       </div>
     </section>
