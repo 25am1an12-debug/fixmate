@@ -3,23 +3,28 @@
 }
 .service-card {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-  padding: 24px 20px; box-shadow: var(--shadow);
-  display: flex; flex-direction: column; gap: 8px;
+  box-shadow: var(--shadow); overflow: hidden;
+  display: flex; flex-direction: column;
   transition: transform 0.15s, box-shadow 0.15s;
 }
 .service-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
-.service-icon {
-  width: 54px; height: 54px; border-radius: 14px; background: var(--teal-soft); color: var(--teal-dark);
-  display: flex; align-items: center; justify-content: center; margin-bottom: 6px;
-}
+.service-photo-wrap { position: relative; }
+.service-photo { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.service-body { padding: 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
 .service-card h3 { font-size: 17px; color: var(--navy); }
 .service-tag { font-size: 13.5px; color: var(--muted); }
 .service-meta { display: flex; gap: 10px; font-size: 13px; margin-top: 4px; }
 .rating { color: #d99413; font-weight: 700; }
+.rating em { font-style: normal; font-weight: 500; color: var(--muted); }
+.service-badge {
+  position: absolute; top: 12px; right: 12px;
+  background: var(--amber); color: #fff; font-size: 11px; font-weight: 800;
+  padding: 4px 10px; border-radius: 999px; letter-spacing: 0.2px;
+}
 .jobs { color: var(--muted); }
 .service-foot {
   display: flex; align-items: center; justify-content: space-between;
-  margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line);
+  margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line);
 }
 .price { font-size: 19px; font-weight: 800; color: var(--navy); }
 .price em { font-style: normal; font-size: 12.5px; font-weight: 500; color: var(--muted); }

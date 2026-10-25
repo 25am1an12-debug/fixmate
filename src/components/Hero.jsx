@@ -42,6 +42,10 @@ export default function Hero({ onSelectService }) {
             )}
           </div>
 
+          <p className="hero-trust">✓ No hidden charges &nbsp;•&nbsp; ✓ Background-verified pros &nbsp;•&nbsp; ✓ Upfront pricing</p>
+
+          <p className="hero-guarantee">✓ Service guarantee — not happy? Free re-service or refund.</p>
+
           <div className="hero-stats">
             <div><strong>4.8★</strong><span>Avg. rating</span></div>
             <div><strong>95k+</strong><span>Jobs done</span></div>
@@ -49,7 +53,24 @@ export default function Hero({ onSelectService }) {
           </div>
         </div>
 
-        <div className="hero-cards">
+        <div className="hero-side">
+          <div className="hero-pro">
+            <div className="hero-pro-top">
+              <span className="hero-pro-avatar">RK</span>
+              <div className="hero-pro-id">
+                <strong>Rajesh Kumar</strong>
+                <span>Expert Electrician • 8 yrs exp</span>
+              </div>
+              <span className="hero-pro-demo">Demo</span>
+            </div>
+            <div className="hero-pro-meta">
+              <span className="hero-pro-rating">★ 4.9 (2,847)</span>
+              <span className="hero-pro-verified">✓ Verified</span>
+              <span className="hero-pro-eta">Arriving in 12 min</span>
+            </div>
+          </div>
+
+          <div className="hero-cards">
           {quick.map((s) => (
             <button key={s.id} className="quick-card" onClick={() => onSelectService(s)}>
               <span className="quick-icon"><ServiceIcon name={s.icon} size={26} /></span>
@@ -57,6 +78,7 @@ export default function Hero({ onSelectService }) {
               <span className="quick-price">from ₹{s.price}</span>
             </button>
           ))}
+        </div>
         </div>
       </div>
     </section>

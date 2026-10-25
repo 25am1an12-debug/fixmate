@@ -25,6 +25,18 @@ export default function HowItWorks() {
             </div>
           ))}
         </div>
+
+        <div className="track-strip">
+          <span className="track-title">Track every booking live:</span>
+          <div className="track-steps">
+            <span className="track-step active">Requested</span>
+            <span className="track-step">Pro assigned</span>
+            <span className="track-step">Pro on the way</span>
+            <span className="track-step">Job done</span>
+            <span className="track-step">Payment</span>
+          </div>
+          <p className="track-note">Your Booking ID (BK_...) shows live status at every step. Fixed visit fee, no hidden charges — pay only after the job is done.</p>
+        </div>
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { sendOtp, verifyOtp, registerUser, loginWithPhone, firebaseLogin, DEMO_OTP } from '../api/client.js';
 import { isFirebaseConfigured, sendFirebaseOtp, verifyFirebaseOtp } from '../api/firebase.js';
@@ -36,6 +36,16 @@ export default function AuthModal({ open, initialMode = 'login', initialRole = '
     if (open) window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
+
+  // OTP boxes: focus the first box as soon as the OTP step opens,
+  // so typing always starts from the left, never the middle.
+  const otpRefs = useRef([]);
+  useEffect(() => {
+    if (mode === 'otp') {
+      const t = setTimeout(() => otpRefs.current[0]?.focus(), 60);
+      return () => clearTimeout(t);
+    }
+  }, [mode]);
 
   if (!open) return null;
 
@@ -139,10 +149,42 @@ export default function AuthModal({ open, initialMode = 'login', initialRole = '
             <p className="modal-sub">Sent to +91 {phone}</p>
             <label className="field">
               <span>6-digit OTP</span>
-              <input
-                className="otp-input" placeholder="••••••" maxLength={6}
-                value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-              />
+              <div className="otp-boxes">
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <input
+                    key={i}
+                    ref={(el) => { otpRefs.current[i] = el; }}
+                    className={`otp-box${otp[i] ? ' filled' : ''}`}
+                    inputMode="numeric" autoComplete="one-time-code" maxLength={1}
+                    value={otp[i] || ''}
+                    onFocus={() => { if (i > otp.length) otpRefs.current[otp.length]?.focus(); }}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      if (raw === '') {
+                        const next = otp.split('');
+                        next.splice(i, 1);
+                        setOtp(next.join(''));
+                        if (i > 0) otpRefs.current[i - 1]?.focus();
+                        return;
+                      }
+                      const d = raw.replace(/\D/g, '');
+                      if (!d) return;
+                      const next = otp.split('');
+                      next[i] = d.slice(-1);
+                      setOtp(next.join('').slice(0, 6));
+                      if (i < 5) otpRefs.current[i + 1]?.focus();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Backspace' && !otp[i] && i > 0) otpRefs.current[i - 1]?.focus();
+                    }}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const text = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+                      if (text) { setOtp(text); otpRefs.current[Math.min(text.length, 5)]?.focus(); }
+                    }}
+                  />
+                ))}
+              </div>
             </label>
             {demoCode && <p className="demo-hint">Demo OTP: <strong>{demoCode}</strong> (dev only)</p>}
             {USE_FIREBASE && !demoCode && (

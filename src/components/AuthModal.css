@@ -25,7 +25,7 @@
 .modal-sub { color: var(--muted); font-size: 14px; margin: 6px 0 20px; }
 
 .field { display: block; margin-bottom: 16px; }
-.field span { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
+.field > span { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
 .field input {
   width: 100%; padding: 13px 14px; font-size: 15px;
   border: 1.5px solid var(--line); border-radius: 10px; outline: none; transition: border 0.15s;
@@ -33,12 +33,21 @@
 .field input:focus { border-color: var(--teal); }
 .phone-row { display: flex; align-items: stretch; }
 .cc {
-  display: flex; align-items: center; padding: 0 14px;
+  display: flex; align-items: center; flex-shrink: 0; padding: 0 14px;
   background: var(--bg); border: 1.5px solid var(--line); border-right: none;
   border-radius: 10px 0 0 10px; font-weight: 700; color: var(--muted); font-size: 15px;
 }
-.phone-row input { border-radius: 0 10px 10px 0; }
-.otp-input { text-align: center; letter-spacing: 8px; font-size: 20px !important; font-weight: 700; }
+.phone-row input { flex: 1; min-width: 0; width: auto; border-radius: 0 10px 10px 0; }
+.otp-boxes { display: flex; gap: 8px; }
+.otp-box {
+  flex: 1; min-width: 0; height: 54px; padding: 0; text-align: center;
+  font-size: 22px; font-weight: 800; color: var(--navy);
+  border: 1.5px solid var(--line); border-radius: 12px; outline: none;
+  transition: border 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.otp-box:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
+.otp-box.filled { border-color: var(--teal); background: var(--teal-soft); }
+@media (max-width: 400px) { .otp-box { height: 48px; font-size: 20px; } }
 
 .role-toggle {
   display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;

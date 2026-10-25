@@ -1,18 +1,21 @@
 .hero {
-  background: radial-gradient(1100px 500px at 85% -10%, rgba(0, 195, 137, 0.14), transparent 60%),
-              linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+  background: radial-gradient(900px 420px at 85% -10%, rgba(249, 115, 22, 0.22), transparent 60%),
+              radial-gradient(700px 420px at 8% 110%, rgba(0, 195, 137, 0.16), transparent 60%),
+              linear-gradient(180deg, #081426 0%, #0b1f3a 100%);
   padding: 72px 0 64px;
   border-bottom: 1px solid var(--line);
 }
 .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
 
 .pill {
-  display: inline-block; background: var(--teal-soft); color: var(--teal-dark);
+  display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 195, 137, 0.16); color: #6ee7b7;
   font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 999px; margin-bottom: 18px;
 }
-.hero-copy h1 { font-size: clamp(38px, 5vw, 58px); line-height: 1.08; color: var(--navy); letter-spacing: -1.5px; font-weight: 800; }
-.hero-copy h1 .accent { color: var(--teal); }
-.hero-sub { margin: 18px 0 26px; color: var(--muted); font-size: 17px; max-width: 480px; }
+.pill::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+.hero-copy h1 { font-size: clamp(38px, 5vw, 58px); line-height: 1.08; color: #fff; letter-spacing: -1.5px; font-weight: 800; }
+.hero-copy h1 .accent { color: var(--amber); }
+.hero-sub { margin: 18px 0 26px; color: #c7d2e4; font-size: 17px; max-width: 480px; }
+.hero-trust { margin-top: 14px; font-size: 13.5px; font-weight: 600; color: #aebdd4; }
 
 .search-wrap { position: relative; max-width: 480px; }
 .search-input {
@@ -36,8 +39,8 @@
 
 .hero-stats { display: flex; gap: 36px; margin-top: 30px; }
 .hero-stats div { display: flex; flex-direction: column; }
-.hero-stats strong { font-size: 22px; color: var(--navy); }
-.hero-stats span { font-size: 13px; color: var(--muted); }
+.hero-stats strong { font-size: 22px; color: #fff; }
+.hero-stats span { font-size: 13px; color: #aebdd4; }
 
 .hero-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .quick-card {
@@ -45,7 +48,7 @@
   padding: 20px 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
   box-shadow: var(--shadow); transition: transform 0.15s, box-shadow 0.15s; text-align: left;
 }
-.quick-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.quick-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--amber); }
 .quick-icon {
   width: 46px; height: 46px; border-radius: 12px; background: var(--teal-soft); color: var(--teal-dark);
   display: flex; align-items: center; justify-content: center;
@@ -57,3 +60,32 @@
   .hero-grid { grid-template-columns: 1fr; }
   .hero-cards { grid-template-columns: repeat(2, 1fr); }
 }
+
+.hero-side { display: flex; flex-direction: column; gap: 14px; }
+.hero-pro {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+}
+.hero-pro-top { display: flex; align-items: center; gap: 12px; }
+.hero-pro-avatar {
+  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+  background: var(--amber); color: #fff; font-weight: 800; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-pro-id { display: flex; flex-direction: column; min-width: 0; }
+.hero-pro-id strong { font-size: 15px; color: var(--navy); }
+.hero-pro-id span { font-size: 12.5px; color: var(--muted); }
+.hero-pro-demo {
+  margin-left: auto; flex-shrink: 0; font-size: 11px; font-weight: 800;
+  color: var(--muted); background: var(--bg); border: 1px solid var(--line);
+  padding: 3px 8px; border-radius: 999px;
+}
+.hero-pro-meta {
+  display: flex; flex-wrap: wrap; gap: 8px 14px;
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+  font-size: 13px; font-weight: 700;
+}
+.hero-pro-rating { color: #d99413; }
+.hero-pro-verified { color: var(--teal-dark); }
+.hero-pro-eta { color: var(--navy); }
+.hero-guarantee { margin-top: 8px; font-size: 13.5px; font-weight: 700; color: #fbbf24; }

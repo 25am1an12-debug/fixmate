@@ -4,6 +4,8 @@
   --navy-2: #12294d;
   --teal: #00c389;
   --teal-dark: #009e6e;
+  --amber: #f97316;
+  --amber-dark: #e56a08;
   --teal-soft: #e6f9f1;
   --ink: #1a2b3c;
   --muted: #5b6b7f;
@@ -42,8 +44,8 @@ input, select, textarea { font-family: inherit; }
   padding: 12px 22px; transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
 }
 .btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--teal); color: #fff; box-shadow: 0 8px 20px rgba(0, 195, 137, 0.35); }
-.btn-primary:hover { background: var(--teal-dark); }
+.btn-primary { background: var(--amber); color: #fff; box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35); }
+.btn-primary:hover { background: var(--amber-dark); }
 .btn-dark { background: var(--navy); color: #fff; }
 .btn-dark:hover { background: var(--navy-2); }
 .btn-ghost { background: transparent; color: var(--navy); border: 1.5px solid var(--line); }
