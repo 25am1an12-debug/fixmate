@@ -17,6 +17,10 @@ export default function AuthModal({ open, initialMode = 'login', initialRole = '
   const [phone, setPhone] = useState('');
   const [profession, setProfession] = useState('');
   const [otp, setOtp] = useState('');
+  // Mirrors the OTP string synchronously (setOtp is async). The onFocus guard
+  // and the auto-advance must read this ref, not the stale `otp` state —
+  // otherwise focus bounces back to the previous box after every digit.
+  const otpRef = useRef('');
   const [pendingUser, setPendingUser] = useState(null); // holds register payload between steps
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -26,7 +30,7 @@ export default function AuthModal({ open, initialMode = 'login', initialRole = '
     if (open) {
       setMode(initialMode);
       setRole(initialRole);
-      setName(''); setPhone(''); setProfession(''); setOtp('');
+      setName(''); setPhone(''); setProfession(''); setOtp(''); otpRef.current = '';
       setPendingUser(null); setError(''); setDemoCode(''); setBusy(false);
     }
   }, [open, initialMode, initialRole]);
@@ -126,7 +130,7 @@ export default function AuthModal({ open, initialMode = 'login', initialRole = '
     } finally { setBusy(false); }
   };
 
-  const switchMode = (m) => { setMode(m); setError(''); setOtp(''); setDemoCode(''); };
+  const switchMode = (m) => { setMode(m); setError(''); setOtp(''); otpRef.current = ''; setDemoCode(''); };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -157,30 +161,45 @@ export default function AuthModal({ open, initialMode = 'login', initialRole = '
                     className={`otp-box${otp[i] ? ' filled' : ''}`}
                     inputMode="numeric" autoComplete="one-time-code" maxLength={1}
                     value={otp[i] || ''}
-                    onFocus={() => { if (i > otp.length) otpRefs.current[otp.length]?.focus(); }}
+                    onFocus={() => { if (i > otpRef.current.length) otpRefs.current[otpRef.current.length]?.focus(); }}
                     onChange={(e) => {
                       const raw = e.target.value;
                       if (raw === '') {
-                        const next = otp.split('');
+                        const next = otpRef.current.split('');
                         next.splice(i, 1);
-                        setOtp(next.join(''));
+                        const v = next.join('');
+                        otpRef.current = v;
+                        setOtp(v);
                         if (i > 0) otpRefs.current[i - 1]?.focus();
                         return;
                       }
                       const d = raw.replace(/\D/g, '');
                       if (!d) return;
-                      const next = otp.split('');
+                      const next = otpRef.current.split('');
                       next[i] = d.slice(-1);
-                      setOtp(next.join('').slice(0, 6));
+                      const v = next.join('').slice(0, 6);
+                      otpRef.current = v;
+                      setOtp(v);
                       if (i < 5) otpRefs.current[i + 1]?.focus();
                     }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Backspace' && !otp[i] && i > 0) otpRefs.current[i - 1]?.focus();
+                      if (e.key === 'Backspace' && !otp[i] && i > 0) { otpRefs.current[i - 1]?.focus(); return; }
+                      if (/^[0-9]$/.test(e.key)) {
+                        // Typing on a filled box replaces its digit (maxLength
+                        // would otherwise swallow the keystroke) and moves on.
+                        e.preventDefault();
+                        const next = otpRef.current.split('');
+                        next[i] = e.key;
+                        const v = next.join('').slice(0, 6);
+                        otpRef.current = v;
+                        setOtp(v);
+                        if (i < 5) otpRefs.current[i + 1]?.focus();
+                      }
                     }}
                     onPaste={(e) => {
                       e.preventDefault();
                       const text = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
-                      if (text) { setOtp(text); otpRefs.current[Math.min(text.length, 5)]?.focus(); }
+                      if (text) { otpRef.current = text; setOtp(text); otpRefs.current[Math.min(text.length, 5)]?.focus(); }
                     }}
                   />
                 ))}
