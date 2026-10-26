@@ -81,9 +81,41 @@ export async function createBooking({ userId, serviceId, variant, dateISO, slot,
     variant, dateISO, slot, address,
     amount: svc?.price ?? 0,
     status: 'confirmed',
+    paymentStatus: 'pending',
     createdAt: new Date().toISOString(),
   };
   bookings.unshift(booking);
+  write(LS_BOOKINGS, bookings);
+  return { ok: true, booking };
+}
+
+// Same rules as the real backend PATCH /api/bookings/:id.
+export async function updateBooking(bookingId, body) {
+  await delay(400);
+  const bookings = read(LS_BOOKINGS, []);
+  const booking = bookings.find((b) => b.id === bookingId);
+  if (!booking) return { ok: false, error: 'Booking not found.' };
+  const { action } = body || {};
+  if (action === 'cancel') {
+    if (booking.status !== 'confirmed') return { ok: false, error: 'Only a confirmed booking can be cancelled.' };
+    booking.status = 'cancelled';
+  } else if (action === 'complete') {
+    if (!['confirmed', 'in_progress'].includes(booking.status)) return { ok: false, error: 'Only a confirmed booking can be marked done.' };
+    booking.status = 'completed';
+  } else if (action === 'pay') {
+    if (booking.status !== 'completed') return { ok: false, error: 'Payment is due only after the job is done.' };
+    if (booking.paymentStatus === 'paid') return { ok: false, error: 'This booking is already paid.' };
+    booking.paymentStatus = 'paid';
+  } else if (action === 'rate') {
+    const rating = Number(body.rating);
+    if (booking.status !== 'completed') return { ok: false, error: 'You can rate only after the job is done.' };
+    if (booking.rating) return { ok: false, error: 'You have already rated this booking.' };
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) return { ok: false, error: 'Rating must be 1 to 5 stars.' };
+    booking.rating = rating;
+    if (typeof body.review === 'string' && body.review.trim()) booking.review = body.review.trim().slice(0, 500);
+  } else {
+    return { ok: false, error: 'Unknown action.' };
+  }
   write(LS_BOOKINGS, bookings);
   return { ok: true, booking };
 }

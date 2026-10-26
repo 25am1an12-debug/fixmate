@@ -15,6 +15,17 @@ const NAMES = {
   pest: 'Pest Control', salon: 'Salon at Home',
 };
 
+// One shape for every booking the client sees.
+function toClient(b) {
+  return {
+    id: b.bookingId, serviceName: b.serviceName, variant: b.variant,
+    dateISO: b.dateISO, slot: b.slot, address: b.address,
+    amount: b.amount, status: b.status,
+    paymentStatus: b.paymentStatus || 'pending',
+    rating: b.rating || null, review: b.review || '',
+  };
+}
+
 // POST /api/bookings  { serviceId, variant, dateISO, slot, address }
 router.post('/', async (req, res, next) => {
   try {
@@ -34,14 +45,7 @@ router.post('/', async (req, res, next) => {
       address: String(address).trim(),
       amount: PRICES[serviceId] ?? 0,
     });
-    res.json({
-      ok: true,
-      booking: {
-        id: booking.bookingId, serviceName: booking.serviceName, variant: booking.variant,
-        dateISO: booking.dateISO, slot: booking.slot, address: booking.address,
-        amount: booking.amount, status: booking.status,
-      },
-    });
+    res.json({ ok: true, booking: toClient(booking) });
   } catch (err) { next(err); }
 });
 
@@ -49,14 +53,42 @@ router.post('/', async (req, res, next) => {
 router.get('/', async (req, res, next) => {
   try {
     const rows = await Booking.find({ user: req.user._id }).sort({ createdAt: -1 }).lean();
-    res.json({
-      ok: true,
-      bookings: rows.map((b) => ({
-        id: b.bookingId, serviceName: b.serviceName, variant: b.variant,
-        dateISO: b.dateISO, slot: b.slot, address: b.address,
-        amount: b.amount, status: b.status,
-      })),
-    });
+    res.json({ ok: true, bookings: rows.map(toClient) });
+  } catch (err) { next(err); }
+});
+
+// PATCH /api/bookings/:id  (id = BK_... id, owner only)
+// { action: 'cancel' }   — confirmed -> cancelled
+// { action: 'complete' } — confirmed/in_progress -> completed (customer confirms the job is done)
+// { action: 'pay' }      — completed + unpaid -> paid (money moves outside the app: cash/UPI to the pro)
+// { action: 'rate', rating: 1-5, review? } — completed, once only
+router.patch('/:id', async (req, res, next) => {
+  try {
+    const booking = await Booking.findOne({ bookingId: req.params.id, user: req.user._id });
+    if (!booking) return res.status(404).json({ ok: false, error: 'Booking not found.' });
+    const { action } = req.body || {};
+    if (action === 'cancel') {
+      if (booking.status !== 'confirmed') return res.status(400).json({ ok: false, error: 'Only a confirmed booking can be cancelled.' });
+      booking.status = 'cancelled';
+    } else if (action === 'complete') {
+      if (!['confirmed', 'in_progress'].includes(booking.status)) return res.status(400).json({ ok: false, error: 'Only a confirmed booking can be marked done.' });
+      booking.status = 'completed';
+    } else if (action === 'pay') {
+      if (booking.status !== 'completed') return res.status(400).json({ ok: false, error: 'Payment is due only after the job is done.' });
+      if (booking.paymentStatus === 'paid') return res.status(400).json({ ok: false, error: 'This booking is already paid.' });
+      booking.paymentStatus = 'paid';
+    } else if (action === 'rate') {
+      const rating = Number(req.body.rating);
+      if (booking.status !== 'completed') return res.status(400).json({ ok: false, error: 'You can rate only after the job is done.' });
+      if (booking.rating) return res.status(400).json({ ok: false, error: 'You have already rated this booking.' });
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) return res.status(400).json({ ok: false, error: 'Rating must be 1 to 5 stars.' });
+      booking.rating = rating;
+      if (typeof req.body.review === 'string' && req.body.review.trim()) booking.review = req.body.review.trim().slice(0, 500);
+    } else {
+      return res.status(400).json({ ok: false, error: 'Unknown action.' });
+    }
+    await booking.save();
+    res.json({ ok: true, booking: toClient(booking) });
   } catch (err) { next(err); }
 });
 

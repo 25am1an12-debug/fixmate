@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { getBookings } from '../api/client.js';
+import { getBookings, updateBooking } from '../api/client.js';
 import './TrackBooking.css';
 
 // Live timeline — driven only by the booking's real status.
@@ -28,9 +28,37 @@ function inr(n) {
   return `₹${Number(n || 0).toLocaleString('en-IN')}`;
 }
 
-function BookingDetail({ booking, onBack }) {
+function starsText(rating) {
+  const r = Math.round(Number(rating) || 0);
+  return '★'.repeat(r) + '☆'.repeat(Math.max(0, 5 - r));
+}
+
+function BookingDetail({ booking, onBack, onUpdated }) {
   const cancelled = booking.status === 'cancelled';
-  const current = CURRENT_STEP[booking.status] ?? 0;
+  const done = booking.status === 'completed';
+  const paid = booking.paymentStatus === 'paid';
+  // All 5 steps done once payment is marked paid; otherwise the step
+  // from the status is the one in progress.
+  const current = paid ? STEPS.length : (CURRENT_STEP[booking.status] ?? 0);
+
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmPay, setConfirmPay] = useState(false);
+  const [stars, setStars] = useState(0);
+  const [review, setReview] = useState('');
+  const [busy, setBusy] = useState(null);
+  const [actionError, setActionError] = useState('');
+
+  const run = async (action, extra = {}) => {
+    setBusy(action);
+    setActionError('');
+    const r = await updateBooking(booking.id, { action, ...extra });
+    setBusy(null);
+    if (!r.ok) { setActionError(r.error || 'Something went wrong.'); return; }
+    setConfirmCancel(false);
+    setConfirmPay(false);
+    onUpdated(r.booking);
+  };
+
   return (
     <div>
       <button className="link-btn track-back" onClick={onBack}>← All bookings</button>
@@ -65,6 +93,91 @@ function BookingDetail({ booking, onBack }) {
               ))}
             </div>
             <p className="track-note">Pro assign hote hi uska naam aur ETA yahin dikhega. Fixed visit fee, no hidden charges — pay only after the job is done.</p>
+
+            {/* Confirmed: cancel, or confirm the job is done */}
+            {!done && (
+              <div className="track-actions">
+                <button className="btn btn-danger-outline" onClick={() => setConfirmCancel(true)} disabled={!!busy}>Cancel booking</button>
+                <button className="btn btn-primary" onClick={() => run('complete')} disabled={!!busy}>
+                  {busy === 'complete' ? 'Saving…' : '✓ Job done — mark complete'}
+                </button>
+              </div>
+            )}
+            {!done && (
+              <p className="track-action-note">Kaam poora ho gaya ho to "Job done" dabao — uske baad Pay aur Rating khul jayenge.</p>
+            )}
+            {confirmCancel && !done && (
+              <div className="track-confirm">
+                <p>Pakka cancel karna hai? Ye booking cancelled ho jayegi.</p>
+                <div className="track-confirm-row">
+                  <button className="btn btn-danger-outline" onClick={() => run('cancel')} disabled={!!busy}>
+                    {busy === 'cancel' ? 'Cancelling…' : 'Yes, cancel booking'}
+                  </button>
+                  <button className="btn" onClick={() => setConfirmCancel(false)} disabled={!!busy}>No, keep it</button>
+                </div>
+              </div>
+            )}
+
+            {/* Completed: pay after the job, then rate the pro */}
+            {done && (
+              <div className="track-actions">
+                {paid ? (
+                  <span className="paid-badge">✓ Paid {inr(booking.amount)}</span>
+                ) : (
+                  <button className="btn btn-primary" onClick={() => setConfirmPay(true)} disabled={!!busy}>
+                    Pay {inr(booking.amount)}
+                  </button>
+                )}
+              </div>
+            )}
+            {done && !paid && (
+              <p className="track-action-note">Pay the pro directly by cash or UPI, then tap Pay to mark this booking as paid.</p>
+            )}
+            {done && !paid && confirmPay && (
+              <div className="track-confirm track-confirm-pay">
+                <p>{inr(booking.amount)} pro ko de diye? Confirm karte hi booking Paid mark ho jayegi.</p>
+                <div className="track-confirm-row">
+                  <button className="btn btn-primary" onClick={() => run('pay')} disabled={!!busy}>
+                    {busy === 'pay' ? 'Saving…' : 'Yes, mark as paid'}
+                  </button>
+                  <button className="btn" onClick={() => setConfirmPay(false)} disabled={!!busy}>Not yet</button>
+                </div>
+              </div>
+            )}
+            {done && (
+              booking.rating ? (
+                <div className="rated-box">
+                  <h4>You rated this service</h4>
+                  <span className="rated-stars">{starsText(booking.rating)}</span>
+                  {booking.review && <p>"{booking.review}"</p>}
+                </div>
+              ) : (
+                <div className="rate-box">
+                  <h4>Rate your pro</h4>
+                  <p>Kaam kaisa laga? Stars dabao — 5 matlab best.</p>
+                  <div className="rate-stars">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <button key={n} type="button" className={n <= stars ? 'on' : ''} onClick={() => setStars(n)} aria-label={`${n} star${n > 1 ? 's' : ''}`}>★</button>
+                    ))}
+                  </div>
+                  <textarea
+                    placeholder="How was the service? (optional)"
+                    value={review}
+                    onChange={(e) => setReview(e.target.value)}
+                    maxLength={500}
+                  />
+                  <button
+                    className="btn btn-primary rate-submit"
+                    onClick={() => run('rate', { rating: stars, review: review.trim() })}
+                    disabled={stars === 0 || !!busy}
+                  >
+                    {busy === 'rate' ? 'Saving…' : 'Submit rating'}
+                  </button>
+                </div>
+              )
+            )}
+
+            {actionError && <p className="track-action-error">{actionError}</p>}
           </>
         )}
       </div>
@@ -96,6 +209,11 @@ export default function TrackBooking({ onBack, onLogin, onBookNow }) {
     return () => { alive = false; };
   }, [user]);
 
+  const handleUpdated = (updated) => {
+    setBookings((list) => list.map((b) => (b.id === updated.id ? updated : b)));
+    setSelected(updated);
+  };
+
   const trackById = () => {
     const q = query.trim().toUpperCase();
     if (!q) { setQueryError('Enter your Booking ID (e.g. BK_...).'); return; }
@@ -125,7 +243,7 @@ export default function TrackBooking({ onBack, onLogin, onBookNow }) {
             <button className="btn btn-primary" onClick={onLogin}>Login</button>
           </div>
         ) : selected ? (
-          <BookingDetail booking={selected} onBack={() => setSelected(null)} />
+          <BookingDetail booking={selected} onBack={() => setSelected(null)} onUpdated={handleUpdated} />
         ) : (
           <>
             <div className="track-card track-search">

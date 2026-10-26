@@ -1,0 +1,42 @@
+.price-panel { background: var(--bg); }
+
+.price-grid {
+  display: grid; grid-template-columns: 1fr 1.25fr; gap: 24px;
+  margin-top: 36px; align-items: start;
+}
+
+.price-promises { display: flex; flex-direction: column; gap: 16px; }
+.promise-card {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px;
+}
+.promise-tick {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--teal-soft); color: var(--teal-dark); font-weight: 800; font-size: 16px;
+}
+.promise-card h3 { color: var(--navy); font-size: 17px; margin-bottom: 4px; }
+.promise-card p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+.price-list {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 8px 24px 20px;
+}
+.price-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 0; border-bottom: 1px solid var(--line);
+}
+.price-row-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.price-row-main strong { color: var(--navy); font-size: 16px; }
+.price-row-main span { color: var(--muted); font-size: 13.5px; }
+.price-row-price { color: var(--navy); font-size: 18px; font-weight: 800; white-space: nowrap; }
+.price-row-price em { font-style: normal; font-size: 13px; font-weight: 600; color: var(--muted); }
+.price-book { padding: 10px 22px; font-size: 14px; }
+.price-note { margin-top: 16px; font-size: 13.5px; color: var(--muted); text-align: center; }
+
+@media (max-width: 860px) {
+  .price-grid { grid-template-columns: 1fr; }
+  .price-row { flex-wrap: wrap; }
+  .price-book { width: 100%; }
+}

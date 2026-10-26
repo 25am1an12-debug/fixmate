@@ -9,6 +9,7 @@ import Footer from './components/Footer.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import BookingModal from './components/BookingModal.jsx';
 import TrackBooking from './components/TrackBooking.jsx';
+import Faq from './components/Faq.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 import './App.css';
 
@@ -59,6 +60,7 @@ export default function App() {
             <HowItWorks onTrack={goTrack} />
             <ProCta onJoinAsPro={openRegisterPro} onProLogin={openLoginPro} />
             <Testimonials />
+            <Faq />
           </>
         )}
       </main>

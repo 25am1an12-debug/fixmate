@@ -111,3 +111,9 @@ export async function getBookings(userId) {
   if (USE_MOCK) return mock.getBookings(userId);
   return req('/api/bookings');
 }
+
+// action: 'cancel' | 'complete' | 'pay' | 'rate' (+ rating, review for 'rate')
+export async function updateBooking(bookingId, body) {
+  if (USE_MOCK) return mock.updateBooking(bookingId, body);
+  return req(`/api/bookings/${encodeURIComponent(bookingId)}`, { method: 'PATCH', body });
+}
