@@ -54,6 +54,8 @@
 .track-detail-grid span { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
 .track-detail-grid strong { color: var(--navy); font-size: 14.5px; }
 .track-address { color: var(--muted); font-size: 14px; margin-top: 16px; }
+.track-location { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+.track-location a { color: var(--teal-dark); font-weight: 700; }
 .track-cancelled { margin-top: 20px; color: var(--danger); font-weight: 700; }
 
 .timeline { display: flex; gap: 8px; margin-top: 24px; }
@@ -111,6 +113,21 @@
 .rate-submit { margin-top: 12px; }
 .rated-stars { color: var(--amber); font-size: 22px; letter-spacing: 2px; }
 .rated-box p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+
+/* Reschedule — same day/slot chips as the booking flow */
+.reschedule-box { margin-top: 16px; background: #f8fafc; border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.reschedule-box h4 { color: var(--navy); font-size: 15px; margin-bottom: 4px; }
+.reschedule-box > p { color: var(--muted); font-size: 13.5px; margin-bottom: 12px; }
+.pick-label { font-size: 13px; font-weight: 700; color: var(--navy); margin: 12px 0 8px; }
+.reschedule-days, .reschedule-slots { display: flex; flex-wrap: wrap; gap: 8px; }
+.reschedule-days button, .reschedule-slots button {
+  padding: 9px 13px; font-size: 13.5px; font-family: inherit; cursor: pointer;
+  background: #fff; border: 1.5px solid var(--line); border-radius: 999px; color: var(--navy);
+}
+.reschedule-days button.active, .reschedule-slots button.active {
+  border-color: var(--teal); background: var(--teal-soft); color: var(--teal-dark); font-weight: 700;
+}
+.reschedule-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 
 @media (max-width: 640px) {
   .track-detail-grid { grid-template-columns: repeat(2, 1fr); }

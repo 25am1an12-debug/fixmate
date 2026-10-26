@@ -10,6 +10,12 @@ const bookingSchema = new mongoose.Schema(
     dateISO: { type: String, required: true },
     slot: { type: String, required: true },
     address: { type: String, required: true },
+    // GPS location saved at booking time (customer's phone, free browser GPS) —
+    // the pro taps "Open in Maps" on the booking to navigate straight there.
+    location: {
+      lat: { type: Number },
+      lng: { type: Number },
+    },
     amount: { type: Number, required: true },
     status: { type: String, enum: ['confirmed', 'in_progress', 'completed', 'cancelled'], default: 'confirmed' },
     // Payment happens only AFTER the job is done — never upfront.

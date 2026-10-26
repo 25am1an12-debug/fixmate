@@ -14,6 +14,14 @@ const QA = [
     a: 'Yes — open My Bookings, tap your booking and tap Cancel booking. You can cancel while the booking is still confirmed.',
   },
   {
+    q: 'Can I reschedule my booking?',
+    a: 'Yes — open My Bookings, tap your booking and tap Reschedule. Pick a new date and time slot. You can reschedule while the booking is still confirmed, at no extra charge.',
+  },
+  {
+    q: 'How will the pro find my home?',
+    a: 'While booking, tap "Use my current location" — your GPS location is saved with the booking. The pro can tap "Open in Maps" on your booking to navigate straight to your home.',
+  },
+  {
     q: 'When do I pay?',
     a: 'Only after the job is done. Once the job is done, tap Pay on your booking — pay the pro by cash or UPI, then mark it as paid in the app.',
   },

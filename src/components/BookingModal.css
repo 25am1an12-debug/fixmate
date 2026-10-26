@@ -53,3 +53,9 @@
   .variants { grid-template-columns: 1fr; }
   .slots { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Current location — free GPS + OpenStreetMap reverse geocoding */
+.loc-btn { width: 100%; margin-bottom: 12px; }
+.loc-status { font-size: 13.5px; margin: 0 0 12px; }
+.loc-ok { color: var(--teal-dark); font-weight: 600; }
+.loc-err { color: var(--danger); font-weight: 600; }

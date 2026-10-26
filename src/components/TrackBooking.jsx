@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { getBookings, updateBooking } from '../api/client.js';
+import { timeSlots, nextDays } from '../data/services.js';
 import './TrackBooking.css';
 
 // Live timeline — driven only by the booking's real status.
@@ -43,6 +44,12 @@ function BookingDetail({ booking, onBack, onUpdated }) {
 
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [confirmPay, setConfirmPay] = useState(false);
+  const [showReschedule, setShowReschedule] = useState(false);
+  const [resDayIdx, setResDayIdx] = useState(0);
+  const [resSlot, setResSlot] = useState('');
+  const resDays = nextDays(7);
+  const fmtDay = (d) =>
+    d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
   const [stars, setStars] = useState(0);
   const [review, setReview] = useState('');
   const [busy, setBusy] = useState(null);
@@ -56,6 +63,7 @@ function BookingDetail({ booking, onBack, onUpdated }) {
     if (!r.ok) { setActionError(r.error || 'Something went wrong.'); return; }
     setConfirmCancel(false);
     setConfirmPay(false);
+    setShowReschedule(false);
     onUpdated(r.booking);
   };
 
@@ -78,6 +86,11 @@ function BookingDetail({ booking, onBack, onUpdated }) {
           <div><span>Amount</span><strong>{inr(booking.amount)}</strong></div>
         </div>
         <p className="track-address">{booking.address}</p>
+        {booking.location && booking.location.lat != null && booking.location.lng != null && (
+          <p className="track-location">
+            📍 Location saved — <a href={`https://www.google.com/maps?q=${booking.location.lat},${booking.location.lng}`} target="_blank" rel="noreferrer">Open in Maps</a> · pro yahin se navigate karke aayega.
+          </p>
+        )}
 
         {cancelled ? (
           <p className="track-cancelled">Ye booking cancelled hai.</p>
@@ -94,10 +107,19 @@ function BookingDetail({ booking, onBack, onUpdated }) {
             </div>
             <p className="track-note">Pro assign hote hi uska naam aur ETA yahin dikhega. Fixed visit fee, no hidden charges — pay only after the job is done.</p>
 
-            {/* Confirmed: cancel, or confirm the job is done */}
+            {/* Confirmed: cancel, reschedule, or confirm the job is done */}
             {!done && (
               <div className="track-actions">
                 <button className="btn btn-danger-outline" onClick={() => setConfirmCancel(true)} disabled={!!busy}>Cancel booking</button>
+                {booking.status === 'confirmed' && (
+                  <button
+                    className="btn"
+                    onClick={() => { setShowReschedule(true); setResSlot(booking.slot); }}
+                    disabled={!!busy}
+                  >
+                    Reschedule
+                  </button>
+                )}
                 <button className="btn btn-primary" onClick={() => run('complete')} disabled={!!busy}>
                   {busy === 'complete' ? 'Saving…' : '✓ Job done — mark complete'}
                 </button>
@@ -105,6 +127,38 @@ function BookingDetail({ booking, onBack, onUpdated }) {
             )}
             {!done && (
               <p className="track-action-note">Kaam poora ho gaya ho to "Job done" dabao — uske baad Pay aur Rating khul jayenge.</p>
+            )}
+            {!done && booking.status === 'confirmed' && showReschedule && (
+              <div className="reschedule-box">
+                <h4>Reschedule booking</h4>
+                <p>Pick a new date and time — no extra charge, no need to cancel.</p>
+                <p className="pick-label">Choose a day</p>
+                <div className="reschedule-days">
+                  {resDays.map((d, i) => (
+                    <button key={i} type="button" className={i === resDayIdx ? 'active' : ''} onClick={() => setResDayIdx(i)}>
+                      {fmtDay(d)}
+                    </button>
+                  ))}
+                </div>
+                <p className="pick-label">Choose a time</p>
+                <div className="reschedule-slots">
+                  {timeSlots.map((t) => (
+                    <button key={t} type="button" className={t === resSlot ? 'active' : ''} onClick={() => setResSlot(t)}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+                <div className="reschedule-row">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => run('reschedule', { dateISO: resDays[resDayIdx].toISOString(), slot: resSlot })}
+                    disabled={!resSlot || !!busy}
+                  >
+                    {busy === 'reschedule' ? 'Saving…' : 'Save new date & time'}
+                  </button>
+                  <button className="btn" onClick={() => setShowReschedule(false)} disabled={!!busy}>Keep old slot</button>
+                </div>
+              </div>
             )}
             {confirmCancel && !done && (
               <div className="track-confirm">

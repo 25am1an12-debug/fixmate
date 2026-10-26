@@ -21,6 +21,7 @@ function toClient(b) {
     id: b.bookingId, serviceName: b.serviceName, variant: b.variant,
     dateISO: b.dateISO, slot: b.slot, address: b.address,
     amount: b.amount, status: b.status,
+    location: b.location && b.location.lat != null ? { lat: b.location.lat, lng: b.location.lng } : null,
     paymentStatus: b.paymentStatus || 'pending',
     rating: b.rating || null, review: b.review || '',
   };
@@ -29,9 +30,16 @@ function toClient(b) {
 // POST /api/bookings  { serviceId, variant, dateISO, slot, address }
 router.post('/', async (req, res, next) => {
   try {
-    const { serviceId, variant, dateISO, slot, address } = req.body;
+    const { serviceId, variant, dateISO, slot, address, location } = req.body;
     if (!serviceId || !variant || !dateISO || !slot || String(address || '').trim().length < 10) {
       return res.status(400).json({ ok: false, error: 'Missing booking details.' });
+    }
+    // Optional GPS location from the customer's phone (free browser GPS).
+    // Validated only when present — a bad value is ignored, never fatal.
+    let loc = null;
+    if (location && typeof location.lat === 'number' && typeof location.lng === 'number'
+      && location.lat >= -90 && location.lat <= 90 && location.lng >= -180 && location.lng <= 180) {
+      loc = { lat: location.lat, lng: location.lng };
     }
     const bookingId = 'BK_' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
     const booking = await Booking.create({
@@ -43,6 +51,7 @@ router.post('/', async (req, res, next) => {
       dateISO,
       slot,
       address: String(address).trim(),
+      location: loc,
       amount: PRICES[serviceId] ?? 0,
     });
     res.json({ ok: true, booking: toClient(booking) });
@@ -61,6 +70,7 @@ router.get('/', async (req, res, next) => {
 // { action: 'cancel' }   — confirmed -> cancelled
 // { action: 'complete' } — confirmed/in_progress -> completed (customer confirms the job is done)
 // { action: 'pay' }      — completed + unpaid -> paid (money moves outside the app: cash/UPI to the pro)
+// { action: 'reschedule', dateISO, slot } — confirmed -> new date & slot (no extra charge)
 // { action: 'rate', rating: 1-5, review? } — completed, once only
 router.patch('/:id', async (req, res, next) => {
   try {
@@ -77,6 +87,12 @@ router.patch('/:id', async (req, res, next) => {
       if (booking.status !== 'completed') return res.status(400).json({ ok: false, error: 'Payment is due only after the job is done.' });
       if (booking.paymentStatus === 'paid') return res.status(400).json({ ok: false, error: 'This booking is already paid.' });
       booking.paymentStatus = 'paid';
+    } else if (action === 'reschedule') {
+      if (booking.status !== 'confirmed') return res.status(400).json({ ok: false, error: 'Only a confirmed booking can be rescheduled.' });
+      const { dateISO, slot } = req.body || {};
+      if (!dateISO || !slot) return res.status(400).json({ ok: false, error: 'Choose a new date and time slot.' });
+      booking.dateISO = dateISO;
+      booking.slot = slot;
     } else if (action === 'rate') {
       const rating = Number(req.body.rating);
       if (booking.status !== 'completed') return res.status(400).json({ ok: false, error: 'You can rate only after the job is done.' });

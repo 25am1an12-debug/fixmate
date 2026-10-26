@@ -70,7 +70,7 @@ export async function getServices() {
 }
 
 // ----------------------------- BOOKINGS -----------------------------
-export async function createBooking({ userId, serviceId, variant, dateISO, slot, address }) {
+export async function createBooking({ userId, serviceId, variant, dateISO, slot, address, location }) {
   await delay(700);
   const svc = services.find((s) => s.id === serviceId);
   const bookings = read(LS_BOOKINGS, []);
@@ -79,6 +79,7 @@ export async function createBooking({ userId, serviceId, variant, dateISO, slot,
     userId, serviceId,
     serviceName: svc?.name ?? serviceId,
     variant, dateISO, slot, address,
+    location: location || null,
     amount: svc?.price ?? 0,
     status: 'confirmed',
     paymentStatus: 'pending',
@@ -106,6 +107,12 @@ export async function updateBooking(bookingId, body) {
     if (booking.status !== 'completed') return { ok: false, error: 'Payment is due only after the job is done.' };
     if (booking.paymentStatus === 'paid') return { ok: false, error: 'This booking is already paid.' };
     booking.paymentStatus = 'paid';
+  } else if (action === 'reschedule') {
+    if (booking.status !== 'confirmed') return { ok: false, error: 'Only a confirmed booking can be rescheduled.' };
+    const { dateISO, slot } = body || {};
+    if (!dateISO || !slot) return { ok: false, error: 'Choose a new date and time slot.' };
+    booking.dateISO = dateISO;
+    booking.slot = slot;
   } else if (action === 'rate') {
     const rating = Number(body.rating);
     if (booking.status !== 'completed') return { ok: false, error: 'You can rate only after the job is done.' };

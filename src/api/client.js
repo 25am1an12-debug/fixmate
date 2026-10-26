@@ -101,7 +101,7 @@ export async function createBooking(b) {
   if (USE_MOCK) return mock.createBooking(b);
   const r = await req('/api/bookings', {
     method: 'POST',
-    body: { serviceId: b.serviceId, variant: b.variant, dateISO: b.dateISO, slot: b.slot, address: b.address },
+    body: { serviceId: b.serviceId, variant: b.variant, dateISO: b.dateISO, slot: b.slot, address: b.address, location: b.location || null },
   });
   if (!r.ok) return r;
   return { ok: true, booking: r.booking };
