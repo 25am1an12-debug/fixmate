@@ -1,7 +1,7 @@
 // FixMate service worker — makes the app installable and usable offline.
 // Cache-first for the app's own files; API calls and logins always go to
 // the network and are never cached. Bump CACHE when the shell changes.
-const CACHE = 'fixmate-v2';
+const CACHE = 'fixmate-v3';
 const CORE = ['/', '/index.html', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
