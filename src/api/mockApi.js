@@ -83,6 +83,7 @@ export async function createBooking({ userId, serviceId, variant, dateISO, slot,
     amount: svc?.price ?? 0,
     status: 'confirmed',
     paymentStatus: 'pending',
+    proId: null, proName: '', proPhone: '',
     createdAt: new Date().toISOString(),
   };
   bookings.unshift(booking);
@@ -97,7 +98,21 @@ export async function updateBooking(bookingId, body) {
   const booking = bookings.find((b) => b.id === bookingId);
   if (!booking) return { ok: false, error: 'Booking not found.' };
   const { action } = body || {};
-  if (action === 'cancel') {
+  if (action === 'accept') {
+    // Pro Dashboard: a professional takes an untaken confirmed booking.
+    // The pro's identity arrives in the body (the real backend takes it
+    // from the login token instead and ignores these fields).
+    if (booking.status !== 'confirmed') return { ok: false, error: 'This booking is no longer available.' };
+    if (booking.proId) return { ok: false, error: 'This booking is already taken by another professional.' };
+    booking.proId = body.proId || null;
+    booking.proName = body.proName || '';
+    booking.proPhone = body.proPhone || '';
+    booking.status = 'in_progress';
+  } else if (action === 'pro_complete') {
+    if (!booking.proId || booking.proId !== body.proId) return { ok: false, error: 'This booking is not assigned to you.' };
+    if (booking.status !== 'in_progress') return { ok: false, error: 'Only an accepted booking can be marked done.' };
+    booking.status = 'completed';
+  } else if (action === 'cancel') {
     if (booking.status !== 'confirmed') return { ok: false, error: 'Only a confirmed booking can be cancelled.' };
     booking.status = 'cancelled';
   } else if (action === 'complete') {
@@ -130,5 +145,19 @@ export async function updateBooking(bookingId, body) {
 export async function getBookings(userId) {
   await delay(300);
   const bookings = read(LS_BOOKINGS, []);
+  const users = read(LS_USERS, []);
+  const me = users.find((u) => u.id === userId);
+  // Pro Dashboard: professionals see jobs they accepted + new untaken
+  // confirmed bookings, with the customer's name/phone (mirrors backend).
+  if (me && me.role === 'professional') {
+    const list = bookings.filter((b) => b.proId === userId || (!b.proId && b.status === 'confirmed'));
+    return {
+      ok: true,
+      bookings: list.map((b) => {
+        const cust = users.find((u) => u.id === b.userId);
+        return { ...b, customerName: cust?.name || '', customerPhone: cust?.phone || '' };
+      }),
+    };
+  }
   return { ok: true, bookings: bookings.filter((b) => b.userId === userId) };
 }

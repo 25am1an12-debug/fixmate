@@ -54,6 +54,8 @@
 .track-detail-grid span { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
 .track-detail-grid strong { color: var(--navy); font-size: 14.5px; }
 .track-address { color: var(--muted); font-size: 14px; margin-top: 16px; }
+.track-pro { margin-top: 10px; font-size: 14px; color: var(--muted); }
+.track-pro strong { color: var(--navy); }
 .track-location { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
 .track-location a { color: var(--teal-dark); font-weight: 700; }
 .track-cancelled { margin-top: 20px; color: var(--danger); font-weight: 700; }

@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import './Navbar.css';
 
-export default function Navbar({ onLogin, onProLogin, onBookNow, onMyBookings, onHome }) {
+export default function Navbar({ onLogin, onProLogin, onBookNow, onMyBookings, onProDashboard, onHome }) {
   const { user, logout } = useAuth();
 
   return (
@@ -26,7 +26,11 @@ export default function Navbar({ onLogin, onProLogin, onBookNow, onMyBookings, o
             <div className="user-chip">
               <span className="user-avatar">{user.name?.[0]?.toUpperCase() || 'U'}</span>
               <span className="user-name">{user.name}</span>
-              <button className="link-btn" onClick={onMyBookings}>My Bookings</button>
+              {user.role === 'professional' ? (
+                <button className="link-btn" onClick={onProDashboard}>Pro Dashboard</button>
+              ) : (
+                <button className="link-btn" onClick={onMyBookings}>My Bookings</button>
+              )}
               <button className="link-btn" onClick={logout}>Logout</button>
             </div>
           ) : (

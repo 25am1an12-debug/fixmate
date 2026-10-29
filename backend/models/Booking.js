@@ -18,6 +18,12 @@ const bookingSchema = new mongoose.Schema(
     },
     amount: { type: Number, required: true },
     status: { type: String, enum: ['confirmed', 'in_progress', 'completed', 'cancelled'], default: 'confirmed' },
+    // Professional who accepted the booking from the Pro Dashboard.
+    // Empty until a pro taps "Accept booking" — then the customer can
+    // see the pro's name and phone on the tracking page.
+    proId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    proName: { type: String, default: '' },
+    proPhone: { type: String, default: '' },
     // Payment happens only AFTER the job is done — never upfront.
     paymentStatus: { type: String, enum: ['pending', 'paid'], default: 'pending' },
     // Customer rates the pro once the job is done (1-5 stars + optional review).

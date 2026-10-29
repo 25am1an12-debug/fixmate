@@ -86,6 +86,9 @@ function BookingDetail({ booking, onBack, onUpdated }) {
           <div><span>Amount</span><strong>{inr(booking.amount)}</strong></div>
         </div>
         <p className="track-address">{booking.address}</p>
+        {booking.proName && (
+          <p className="track-pro">👨‍🔧 Professional: <strong>{booking.proName}</strong>{booking.proPhone ? ` • ${booking.proPhone}` : ''}</p>
+        )}
         {booking.location && booking.location.lat != null && booking.location.lng != null && (
           <p className="track-location">
             📍 Location saved — <a href={`https://www.google.com/maps?q=${booking.location.lat},${booking.location.lng}`} target="_blank" rel="noreferrer">Open in Maps</a> · pro yahin se navigate karke aayega.

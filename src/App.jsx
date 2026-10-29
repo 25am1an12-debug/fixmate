@@ -9,6 +9,7 @@ import Footer from './components/Footer.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import BookingModal from './components/BookingModal.jsx';
 import TrackBooking from './components/TrackBooking.jsx';
+import ProDashboard from './components/ProDashboard.jsx';
 import Faq from './components/Faq.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 import './App.css';
@@ -17,9 +18,10 @@ export default function App() {
   const { user } = useAuth();
   const [auth, setAuth] = useState({ open: false, mode: 'login', role: 'customer' });
   const [booking, setBooking] = useState({ open: false, service: null });
-  const [view, setView] = useState('home'); // home | track
+  const [view, setView] = useState('home'); // home | track | pro
 
   const goTrack = () => { setView('track'); window.scrollTo({ top: 0 }); };
+  const goPro = () => { setView('pro'); window.scrollTo({ top: 0 }); };
   const goHome = () => { setView('home'); window.scrollTo({ top: 0 }); };
 
   const openLogin = () => setAuth({ open: true, mode: 'login', role: 'customer' });
@@ -48,11 +50,13 @@ export default function App() {
 
   return (
     <div className="app">
-      <Navbar onLogin={openLogin} onProLogin={openLoginPro} onBookNow={handleBookNow} onMyBookings={goTrack} onHome={goHome} />
+      <Navbar onLogin={openLogin} onProLogin={openLoginPro} onBookNow={handleBookNow} onMyBookings={goTrack} onProDashboard={goPro} onHome={goHome} />
 
       <main>
         {view === 'track' ? (
           <TrackBooking onBack={goHome} onLogin={openLogin} onBookNow={handleBookNow} />
+        ) : view === 'pro' ? (
+          <ProDashboard onBack={goHome} onLogin={openLoginPro} />
         ) : (
           <>
             <Hero onSelectService={startBooking} />
